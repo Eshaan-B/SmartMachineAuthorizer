@@ -63,7 +63,7 @@ class _DateSelectionState extends State<DateSelection> {
                         'userId': null,
                         'timeSlot': null,
                         'otp': otp,
-                        'validated': false,
+                        'otpVerified':false,
                       }).then((docRef) async {
                         bookingId = docRef.id.toString();
                         await FirebaseFirestore.instance

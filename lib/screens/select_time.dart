@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/booking_status.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:firebase_database/firebase_database.dart';
 import 'tabs_screen.dart';
 
 class SelectTime extends StatefulWidget {
@@ -45,6 +48,19 @@ class _SelectTimeState extends State<SelectTime> {
     bookingDate = routeArgs['date'];
   }
 
+  Future<bool> updateToRealtime(var myData) async {
+    FirebaseDatabase database = FirebaseDatabase.instance;
+    DatabaseReference ref = FirebaseDatabase.instance.ref(
+        "bookings/${myData["machineTypeId"]}/${myData["machineId"]}/${bookingId}");
+    try {
+      await ref.set({"bookingId": myData["id"], "otpVerified": false});
+      return true;
+    } catch (err) {
+      print(err.toString());
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +88,7 @@ class _SelectTimeState extends State<SelectTime> {
                   title: Text("${slot.id.toString()} hrs"),
                   onTap: (slot['status'] == "booked")
                       ? null
-                      : () {
+                      : () async {
                           showDialog(
                               context: context,
                               builder: (ctx) => AlertDialog(
@@ -110,6 +126,7 @@ class _SelectTimeState extends State<SelectTime> {
                                               .update({
                                             'status': "booked",
                                           });
+                                          //updating timeSlots in bookings
                                           await FirebaseFirestore.instance
                                               .collection('bookings')
                                               .doc(bookingId)
@@ -119,6 +136,7 @@ class _SelectTimeState extends State<SelectTime> {
                                                 Status.completed.toString()
                                           });
                                           dynamic myData;
+
                                           await FirebaseFirestore.instance
                                               .collection('bookings')
                                               .where('id', isEqualTo: bookingId)
@@ -126,13 +144,13 @@ class _SelectTimeState extends State<SelectTime> {
                                               .then((data) {
                                             myData = data.docs[0].data();
                                             print("myData fetched");
+                                            print(myData);
                                           }).catchError((err) {
                                             print(
                                                 "Error while fetching myData");
                                             print(err);
                                           });
-                                          ;
-
+                                          //updating bookings in machines
                                           FirebaseFirestore.instance
                                               .collection(
                                                   'machineType/${machineType.id}/machines/${machine.id}/bookings')
@@ -145,6 +163,8 @@ class _SelectTimeState extends State<SelectTime> {
                                                 "Error while pushing bookingId to machine");
                                             print(err);
                                           });
+                                          //updating to realtimeDB
+                                          await updateToRealtime(myData);
 
                                           Navigator.popUntil(
                                               context,
