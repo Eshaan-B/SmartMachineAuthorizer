@@ -1,4 +1,4 @@
-# sma
+# Smart Machine Authorizer
 
 A new Flutter project.
 
