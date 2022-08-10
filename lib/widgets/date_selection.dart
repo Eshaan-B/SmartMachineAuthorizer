@@ -63,7 +63,7 @@ class _DateSelectionState extends State<DateSelection> {
                         'userId': null,
                         'timeSlot': null,
                         'otp': otp,
-                        'otpVerified':false,
+                        'otpVerified': false,
                       }).then((docRef) async {
                         bookingId = docRef.id.toString();
                         await FirebaseFirestore.instance
@@ -74,7 +74,8 @@ class _DateSelectionState extends State<DateSelection> {
                               .pushNamed(SelectMachine.routeName, arguments: {
                             'machineType': widget.machineTypeDoc,
                             'bookingId': bookingId,
-                            'date':_pickedDate,
+                            'date': _pickedDate,
+                            'otp': otp
                           });
                         }).catchError((err) {
                           print("Error while updating bookingId");

@@ -36,6 +36,7 @@ class _SelectTimeState extends State<SelectTime> {
   String? bookingId;
   DateTime? bookingDate;
   bool isLoading = false;
+  int? otp;
 
   @override
   void didChangeDependencies() {
@@ -46,6 +47,7 @@ class _SelectTimeState extends State<SelectTime> {
     machine = routeArgs['machine'];
     bookingId = routeArgs['bookingId'];
     bookingDate = routeArgs['date'];
+    otp=routeArgs['otp'];
   }
 
   Future<bool> updateToRealtime(var myData) async {
@@ -53,7 +55,7 @@ class _SelectTimeState extends State<SelectTime> {
     DatabaseReference ref = FirebaseDatabase.instance.ref(
         "bookings/${myData["machineTypeId"]}/${myData["machineId"]}/${bookingId}");
     try {
-      await ref.set({"bookingId": myData["id"], "otpVerified": false});
+      await ref.set({"bookingId": myData["id"], "otpVerified": false,"otp":otp,"latest":1});
       return true;
     } catch (err) {
       print(err.toString());

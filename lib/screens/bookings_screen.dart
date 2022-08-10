@@ -54,7 +54,7 @@ class BookingsScreen extends StatelessWidget {
                                   DatabaseReference ref =
                                       FirebaseDatabase.instance.ref(
                                           "bookings/${booking["machineTypeId"]}/${booking["machineId"]}/${booking["id"]}");
-                                  await ref.update({"otpVerified": true});
+                                  await ref.update({"otpVerified": true,"latest":0});
 
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(

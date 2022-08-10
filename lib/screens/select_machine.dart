@@ -13,6 +13,7 @@ class _SelectMachineState extends State<SelectMachine> {
   dynamic machineType;
   String? bookingId;
   DateTime? bookingDate;
+  int? otp;
 
   // Booking currentBooking;
   @override
@@ -28,6 +29,7 @@ class _SelectMachineState extends State<SelectMachine> {
     machineType = routeArgs['machineType'];
     bookingId = routeArgs['bookingId'];
     bookingDate=routeArgs['date'];
+    otp = routeArgs['otp'];
   }
 
   bool _isLoading = false;
@@ -49,6 +51,7 @@ class _SelectMachineState extends State<SelectMachine> {
         'machine': selectedMachine,
         'bookingId': bookingId,
         'date': bookingDate,
+        'otp':otp
       });
     }).catchError((err) {
       print(err);
