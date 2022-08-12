@@ -47,15 +47,32 @@ class _SelectTimeState extends State<SelectTime> {
     machine = routeArgs['machine'];
     bookingId = routeArgs['bookingId'];
     bookingDate = routeArgs['date'];
-    otp=routeArgs['otp'];
+    otp = routeArgs['otp'];
   }
 
   Future<bool> updateToRealtime(var myData) async {
     FirebaseDatabase database = FirebaseDatabase.instance;
+    // storing bookingID as string first in RTDB
+    DatabaseReference refUpdate = FirebaseDatabase.instance
+        .ref("bookings/${myData["machineTypeId"]}/${myData["machineId"]}");
+    try {
+      await refUpdate.update({"bookingId": myData["id"]});
+    } catch (err) {
+      print(err.toString());
+      return false;
+    }
+
+    //adding the booking to RTDB
+
     DatabaseReference ref = FirebaseDatabase.instance.ref(
         "bookings/${myData["machineTypeId"]}/${myData["machineId"]}/${bookingId}");
     try {
-      await ref.set({"bookingId": myData["id"], "otpVerified": false,"otp":otp,"latest":1});
+      await ref.set({
+        "bookingId": myData["id"],
+        "otpVerified": false,
+        "otp": otp,
+        "relay": 0
+      });
       return true;
     } catch (err) {
       print(err.toString());
@@ -128,14 +145,15 @@ class _SelectTimeState extends State<SelectTime> {
                                               .update({
                                             'status': "booked",
                                           });
-                                          //updating timeSlots in bookings
+                                          //updating timeSlots and relayStatus in bookings
                                           await FirebaseFirestore.instance
                                               .collection('bookings')
                                               .doc(bookingId)
                                               .update({
                                             'timeSlot': slot.id.toString(),
                                             'status':
-                                                Status.completed.toString()
+                                                Status.completed.toString(),
+                                            'relay': 0
                                           });
                                           dynamic myData;
 
