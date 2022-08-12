@@ -88,7 +88,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                       const SnackBar(
                                           content: Text(
                                               "Incorrect password. Try again later")));
-                                }g
+                                }
                               },
                             ),
                           ],
